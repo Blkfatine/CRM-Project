@@ -1,0 +1,74 @@
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-3d@1.1.0/dist/chartjs-plugin-3d.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-gradient@0.3.0/dist/chartjs-plugin-gradient.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const ctx3 = document.getElementById('chart3').getContext('2d');
+
+        const utilisateurs = {{ utilisateurs|safe }};  
+        const leadsCounts = {{ leads_counts|safe }};    
+
+        new Chart(ctx3, {
+            type: 'bar', 
+            data: {
+                labels: utilisateurs, 
+                datasets: [{
+                    data: leadsCounts, 
+                    backgroundColor: function(context) {
+                        const chart = context.chart;
+                        const {ctx, chartArea} = chart;
+
+                        if (!chartArea) {
+                            return null;
+                        }
+
+                        const gradient = ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
+                        gradient.addColorStop(0, '#FF7F50');  
+                        gradient.addColorStop(0.5, '#6A5ACD'); 
+                        gradient.addColorStop(1, '#32CD32');   
+                        return gradient;
+                    },
+                    borderColor: [
+                        '#FF6347', '#6A5ACD', '#32CD32', '#FF7F50',
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false  
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(tooltipItem) {
+                                return `${tooltipItem.label}: ${tooltipItem.raw}`;
+                            }
+                        }
+                    },
+                    '3d': {
+                        enabled: true,
+                        depth: 30, 
+                        angleX: -15, 
+                        angleY: 20  
+                    },
+                    gradient: {
+                        animation: {
+                            duration: 2000,
+                            easing: 'easeInOutBounce',
+                        },
+                    },
+                },
+                scales: {
+                    x: {
+                        stacked: false
+                    },
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    });
+</script>

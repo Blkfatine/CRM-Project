@@ -1,0 +1,22 @@
+<!-- notifications.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Notifications</title>
+</head>
+<body>
+    <h1>Notifications</h1>
+    <ul>
+        {% for notification in notifications %}
+            <li class="{% if not notification.is_read %}unread{% endif %}">
+                <a href="{{ notification.redirect_url }}">
+                    {{ notification.message }}
+                </a>
+                <small>{{ notification.created_at|date:"d M Y, H:i" }}</small>
+            </li>
+        {% empty %}
+            <li>Aucune notification disponible.</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

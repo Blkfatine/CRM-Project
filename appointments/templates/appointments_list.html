@@ -1,0 +1,855 @@
+{% load custom_filters %}
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appointments List</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&display=swap">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <style>
+
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Poppins", sans-serif;
+        }
+
+        a {
+            text-decoration: none;
+            color: #f1f3f2;
+            font-size: 14px;
+        }
+
+        canvas {
+            width: 100% !important;
+        }
+
+        img {
+            object-fit: cover;
+        }
+
+        :root {
+            --app-bg: #031224;
+            --table-border: #1a2131;
+            --table-header: #1a2131;
+            --app-content-main-color: #fff;
+            --action-color: #2869ff;
+            --action-color-hover: #6291fd;
+            --app-content-secondary-color: #1d283c;
+            --filter-reset: #2c394f;
+            --filter-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+        }
+
+        body {
+            background-image: url('https://images.unsplash.com/photo-1496096265110-f83ad7f96608?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-position: center;
+        }
+        .top-container {
+            background: #031224;
+            border-radius: 0 0 30px 30px;
+            padding-bottom: 10px;
+        }
+
+        .top-container .nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 20px 14px;
+            border-bottom: none;
+        }
+
+        .top-container .nav .logo {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .top-container .nav .logo i {
+            color: #f1f3f2;
+            font-size: 24px;
+        }
+
+        .top-container .nav .logo a {
+            font-size: 16px;
+        }
+
+        .top-container .nav .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .top-container .nav .nav-links a {
+            color: #ccc;
+            transition: all 0.3s ease;
+        }
+
+        .top-container .nav .nav-links a:hover {
+            color: #fff;
+        }
+
+        .top-container .nav .right-section {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .top-container .nav .right-section > i {
+            color: #f1f3f2;
+            background: #1e293b;
+            padding: 12px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .profile {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 20px;
+        }
+
+        .profile .info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .profile .info a {
+            font-size: 13px;
+            color: #f1f3f2;
+            text-decoration: none;
+        }
+
+        .profile .info i {
+            color: #f1f3f2;
+            font-size: 22px;
+            cursor: pointer;
+        }
+        .top-container .nav .right-section .profile {
+            display: flex;
+            align-items: center;
+            background: #1e293b;
+            padding: 0 10px;
+            border-radius: 50px;
+            gap: 10px;
+        }
+
+        .top-container .nav .right-section .profile .info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .top-container .nav .right-section .profile .info img {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 1px solid #f1f3f2;
+        }
+
+        .top-container .nav .right-section .profile .info a {
+            font-size: 13px;
+        }
+
+        .top-container .nav .right-section .profile .info p {
+            font-size: 13px;
+            color: #ccc;
+        }
+
+        .top-container .nav .right-section .profile>i {
+            color: #f1f3f2;
+            font-size: 22px;
+            cursor: pointer;
+        }
+
+
+        .actions-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 0 20px;
+            margin-top: 15px;
+        }
+
+        .search-bar {
+            background-color: var(--app-content-secondary-color);
+            border: 1px solid var(--app-content-secondary-color);
+            color: var(--app-content-main-color);
+            border-radius: 4px;
+            padding: 8px 16px;
+            width: 300px;
+        }
+        
+
+  
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            padding: 0 20px;
+            backdrop-filter: blur(5px); 
+            background: rgba(0, 0, 0, 0.3);  
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); 
+            border-radius: 10px;  
+        }
+        
+        
+        table thead {
+            background-color: rgba(42, 42, 42, 0.8);  
+            color: #FFF; 
+            backdrop-filter: blur(5px);  
+        }
+        
+        table th, table td {
+            padding: 12px 15px;
+            text-align: left;
+            color: #FFF; 
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);  
+        }
+        
+        tr{
+            background-color: var(--app-content-secondary-color);}
+
+        th {
+            background-color: var(--table-header);
+        }
+
+        .btn {
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            margin-right: 4px;
+        }
+
+        .btn-primary { background-color: var(--action-color); color: #fff; }
+        .btn-primary:hover { background-color: var(--action-color-hover); }
+
+        .bottom-container {
+            display: flex;
+            gap: 20px;
+            padding: 30px;
+        }
+
+        .bottom-container .prog-status,
+        .bottom-container .popular,
+        .bottom-container .upcoming {
+            background: #fefefe;
+            padding: 20px;
+            border-radius: 24px;
+        }
+
+        .bottom-container .prog-status {
+            width: 50%;
+        }
+
+        .bottom-container .prog-status .header{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .bottom-container .prog-status .header h4 {
+            font-weight: 600;
+        }
+
+        .bottom-container .prog-status .header .tabs {
+            background: #f3f3f3;
+            padding: 4px;
+            border-radius: 20px;
+            display: flex;
+            gap: 5px;
+        }
+
+        .bottom-container .prog-status .header .tabs a {
+            padding: 4px 20px;
+            font-size: 12px;
+            color: #000;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .bottom-container .prog-status .header .tabs a.active {
+            background: #fff;
+        }
+
+        .bottom-container .prog-status .details {
+            display: flex;
+            margin-bottom: 60px;
+        }
+
+        .bottom-container .prog-status .details .item {
+            flex: 1;
+        }
+
+
+        .bottom-container .prog-status .details .item p {
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .bottom-container .prog-status .details .item:nth-child(2) {
+            padding: 0 20px;
+            border-left: 1px solid #d2d3d6;
+            border-right: 1px solid #d2d3d6;
+        }
+
+        .bottom-container .prog-status .class-ranking {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            border: 2px solid #d2d3d6;
+            border-radius: 10px;
+            padding: 10px 20px;
+        }
+        .bottom-container .prog-status .class-ranking .info {
+            flex: 1;
+        }
+        .bottom-container .prog-status .class-ranking .info .name {
+            font-weight: 600;
+            font-size: 14px;
+        }
+        .bottom-container .prog-status .class-ranking .info .rank {
+            font-size: 12px;
+            color: #5f6368;
+        }
+        .bottom-container .prog-status .class-ranking .action {
+            text-align: center;
+        }
+        .bottom-container .prog-status .class-ranking .action .btn-primary {
+            font-size: 12px;
+        }
+        .bottom-container .prog-status .class-ranking .action .btn-primary:hover {
+            background: #c5c5c5;
+            color: #000;
+        }
+        .bottom-container .popular ul,
+        .bottom-container .upcoming ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        .bottom-container .popular ul li,
+        .bottom-container .upcoming ul li {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid #e2e2e2;
+            padding: 10px 0;
+        }
+        .bottom-container .popular ul li:last-child,
+        .bottom-container .upcoming ul li:last-child {
+            border-bottom: none;
+        }
+        .bottom-container .popular ul li a,
+        .bottom-container .upcoming ul li a {
+            color: #000;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .bottom-container .popular ul li span,
+        .bottom-container .upcoming ul li span {
+            font-size: 12px;
+            color: #5f6368;
+        }
+      .app-content-actions-wrapper {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 0 20px;
+            background: var(--app-bg);
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 8px;
+      }
+        .prog-status {
+            width: 80%; 
+            margin: 0 auto;  
+            padding: 20px;  
+            background: rgba(255, 255, 255, 0.2); 
+            border-radius: 8px;  
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+            text-align: center; 
+            backdrop-filter: blur(1px);
+        }
+    .prog-status .header h4 {
+        margin-bottom: 10px;  
+        font-size: 2rem; 
+        color: #000;  
+        animation: colorChange 4s infinite;  
+    }
+.prog-status .tabs {
+    display: flex;
+    justify-content: center;  
+    gap: 15px;  
+}
+.prog-status .tabs a {
+    padding: 10px 15px;  
+    border-radius: 5px;  
+    text-decoration: none;  
+    color: #007bff;  
+    transition: background-color 0.3s;  
+}
+.prog-status .tabs a.active {
+    background-color: #007bff;  
+    color: #ffffff; 
+}
+.prog-status .tabs a:hover {
+    background-color: #f0f0f0;  
+}
+      .btn:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);  
+    transform: scale(1.05);  
+}
+.btn-primary:hover {
+    background-color: var(--action-color-hover);
+}
+.search-input {
+    display: none;
+    width: 200px;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-left: 10px;
+    transition: display 0.3s ease;
+}
+.show-search {
+    display: inline-block;
+}
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 116%;
+    background: #1a2b3c;  
+    color: #f1f3f2;
+    border-radius: 8px;
+    padding: 3px;  
+    width: 175px; 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+    z-index: 1000;
+    transition: all 0.3s ease;
+    font-size: 12px;  
+}
+.dropdown-menu a {
+    color: #f1f3f2;
+    text-decoration: none;
+    display: block;
+    padding: 3px 3px;  
+    border-radius: 4px;
+    font-weight: 400; 
+    transition: background 0.3s ease;
+    margin-bottom: 4px;  
+}
+.dropdown-menu a:hover {
+    background: #2196f3;  
+    color: #ffffff;
+}
+.dropdown-menu a:last-child {
+    margin-top: 1px;  
+}
+.filter-button-wrapper.active .filter-menu {
+    display: block;
+}
+.filter-container {
+    position: relative;  
+}
+#filter-date-container {
+    display: none;  
+    position: relative;  
+    top: 100%;  
+
+    margin-top: 5px;  
+    background-color: #fff;  
+    padding: 5px;
+    border: 1px solid #ccc; 
+    border-radius: 4px;  
+    z-index: 10;  
+}
+#filter-arrow {
+    margin-left: 10px;
+    transition: transform 0.3s ease;
+}
+input[type="date"] {
+    width: 100%;  
+}
+btn btn-primary {
+    margin-right: 20px;
+}
+.calendar-container {
+    width: 60%;  
+    max-width: 800px; 
+    margin: 20px auto; 
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    backdrop-filter: blur(1px);
+    display: flex;
+    flex-direction: column; 
+}
+
+.calendar {
+    width: 100%;
+    border-collapse: collapse;
+    grid-template-columns: repeat(7, 1fr);  
+}
+
+.calendar th, .calendar td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+    width: 14.28%;  
+    height: 14.28%;     
+}
+
+.calendar .day {
+    border-radius: 8px;     
+    width: 80px;    
+    height: 80px;   
+    vertical-align: top;
+    position: relative; 
+    transition: transform 0.3s ease, background-color 0.3s ease;    
+    justify-content: flex-start;    
+}
+
+.calendar .day:hover {
+    background-color: #2c394f;  
+    border-radius: 3px;     
+    transform: scale(1.1);  
+    z-index: 1;     
+    min-width: 80px;    
+    min-height: 80px;
+}
+
+.calendar .today {
+    background-color: #2c394f;
+}
+
+.calendar.day.other-month {
+    background-color: white;    
+    color: gray;    
+}
+
+.calendar .count {
+    display: block;
+    margin-top: 5px;
+    color: #00796b;
+}
+
+span.number {
+    margin-left: 10%;
+}
+
+.calendar .day .event-line {
+    height: 2px;
+    background-color: red;  
+    display: flex;  
+    align-items: center;    
+    margin: 5px 10%;
+    border-radius: 2px;
+    margin-right: 10px;
+    position: relative;     
+}
+
+.calendar .day .event-line span {
+    position: relative;
+    font-size: 12px;    
+}
+
+.calendar-container h2 {
+    color: #000;
+}
+
+.appointment-details {
+    display: none;
+    font-size: 10px;    
+    position: flex;
+    white-space: nowrap;    
+    z-index: 10;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  .day:hover .appointment-details {
+    display: block;
+    opacity: 1;
+  }
+  .day:hover .event-line {
+    display: none;
+  }
+
+  .btn {
+    padding: 4px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    margin-right: 4px;
+}
+
+.btn-primary:hover {
+    background-color: var(--action-color-hover);
+}
+
+
+
+.btn-secondary:hover {
+    background-color: #5a6268;  
+}
+
+
+.btn-warning:hover {
+    background-color: #e0a800;  
+}
+
+
+
+.btn-danger:hover {
+    background-color: #c82333;  
+}
+    </style>
+</head>
+<body>
+    <div class="top-container">
+        <div class="nav">
+            <div class="logo">
+                <i class="bx bxl-codepen"></i>
+                <a>WEBRASMA&amp;Digital Rankin</a>
+            </div>
+            <div class="nav-links">
+                <a href= "{% url 'lead_list' %}">Home</a>
+                <a href="{% url 'lead_actions' %}">Leads</a>
+                <a href="{% url 'appointments_list' %}">Rendez-vous</a>
+                <a href="{% url 'conversation_list'%}">Discussions</a>
+                <a href="{% url 'support_guide' %}">Guide de support</a>
+            </div>
+            <div class="right-section">
+                
+                <i class='bx bx-search' id="search-icon" onclick="toggleSearch()"></i>
+                <input type="text" id="searchInput" placeholder="Rechercher..." class="search-input">
+                <script>
+                    function toggleSearch() {
+                        var searchInput = document.getElementById("searchInput");
+                        searchInput.classList.toggle("show-search");
+                        searchInput.focus(); 
+                    }
+                </script>
+                <div class="profile">
+                    <div class="info">
+                        <a>Bienvenue {{ user.username }}</a>
+                        <i class='bx bx-chevron-down' onclick="toggleMenu()"></i>
+                    </div>
+                    <div id="dropdownMenu" class="dropdown-menu">
+                        {% if user.is_staff %}
+                            <a href="{% url 'admin_dashboard' %}" class="admin-link">Espace Admin</a>
+                        {% endif %}
+                        <a href="#" class="logout" onclick="logout()">Déconnexion</a>
+                    </div>
+                </div>
+                <script>
+                    function toggleMenu() {
+                        const menu = document.getElementById('dropdownMenu');
+                        menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+                    }
+            
+                    function logout() {
+                        window.location.href = '/logout'; 
+                    }
+                </script>
+                
+            </div>
+        </div>
+    </div>
+    <div class="actions-container-trigger" style="text-align: right; margin-top: 20px; margin-right: 110px;">
+        <a href="#actions-container" class="btn btn-primary" style="font-size: 12px; /* Réduit la taille de la police */
+        padding: 6px 10px; /* Réduit le padding pour diminuer la taille du bouton */
+        border-radius: 5px; 
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1); 
+         /* Rend le texte en gras */
+        text-transform: uppercase; /* Optionnel : met le texte en majuscules pour plus de visibilité */
+        ">
+            <i class="fas fa-list"></i> Voir Liste des Rendez-vous
+        </a>
+    </div>
+    
+    <div class="calendar-container">
+        <h2>
+            <a style= "font-size: 25px; color: black; top: 10px;" href="?month={{ previous_month }}&year={{ previous_year }}" class='bx bx-caret-left' ></a>
+            <span>{{ current_month_name }} {{ year }}</span>
+            <a style= "font-size: 25px; color: black; " href="?month={{ next_month }}&year={{ next_year }}" class='bx bx-caret-right' ></a>
+        </h2>
+        <table class="calendar">
+            <thead>
+                <tr>
+                    <th class="day-name">Dim</th>
+                    <th class="day-name">Lun</th>
+                    <th class="day-name">Mar</th>
+                    <th class="day-name">Mer</th>
+                    <th class="day-name">Jeu</th>
+                    <th class="day-name">Ven</th>
+                    <th class="day-name">Sam</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    {% for week in calendar_weeks %}
+                    <tr>
+                        {% for day in week %}
+                        <td class="day{% if day == today.day %} today{% endif %}{% if day == 0 %} other-month{% endif %}">
+                            {% if day != 0 %}
+                                <span class="number">{{ day }}</span>
+                                {% if appointment_counts|get_item:day %}
+                                    {% for appointment in appointment_counts|get_item:day %}
+                                        <div class="event-line" style="background-color: {{ appointment.lead.background_color }};"></div>
+                                            
+                                            <div class="appointment-details">
+                                                <span>{{ appointment.lead.Prénom }} {{ appointment.lead.Nom }} {{ appointment.date|date:"H:i" }}</span>
+                                                
+                                            </div>
+    
+                                    {% endfor %}
+                                {% endif %}
+                            {% else %}
+                                <span class="number"></span>
+                            {% endif %}
+                        </td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tr>
+            </tbody>
+                    </table>
+    </div>
+    <div id="actions-container" class="actions-container">
+    <div class="prog-status">
+        <div class="header" style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+            <h4 style="font-size: 24px; margin: 0;">Liste des Rendez-vous</h4>
+            <div class="actions-right" style="display: flex; align-items: center;">
+                <a href="{% url 'book_appointment' %}" class="btn btn-primary" style="margin-right: 15px; padding: 6px 10px; border-radius: 5px; font-size: 12px; text-decoration: none; background-color: #007bff; color: #fff; border: none; display: flex; align-items: center;">
+                    <i class="fas fa-plus-circle" style="margin-right: 5px;"></i> Ajouter un Rendez-vous
+                </a>
+                <div class="filter-container" style="position: relative;">
+                    <a href="#" class="btn btn-secondary" onclick="toggleDateInput(); return false;" style="padding: 6px 10px; border-radius: 5px; font-size: 12px; background-color: #6c757d; color: #fff; text-decoration: none; display: flex; align-items: center;">
+                        <i class="fas fa-filter" style="margin-right: 5px;"></i> Filtrer
+                        <i id="filter-arrow" class="fas fa-chevron-down" style="margin-left: 5px;"></i>
+                    </a>
+                    <div id="filter-date-container" class="filter-date-container" style="display: none; position: absolute; top: 100%; left: 0; background-color: #fff; padding: 10px; border: 1px solid #ced4da; border-radius: 5px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 200px;">
+                        <input type="date" id="filter-date" class="form-control" lang="fr" placeholder="Filtrer par date" style="border: 1px solid #ced4da; border-radius: 5px; padding: 5px; width: 100%;">
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Lead</th>
+                    <th>Date</th>
+                    <th>Location</th>
+                    <th>Confirmation</th>
+                    <th>Actions</th>
+
+                    
+                </tr>
+            </thead>
+            <tbody id="lead-table-body">
+                {% for appointment in appointments %}
+                <tr data-date="{{ appointment.date|date:'Y-m-d' }}">
+                    <td>{{ appointment.lead }}</td>
+                    <td>{{ appointment.date|date:'d/m/Y' }}</td> 
+                    <td>{{ appointment.location }}</td>
+                    <td>{{ appointment.confirmed|yesno:"Yes,No" }}</td>
+                    <td>
+                        <a href="{% url 'appointment_edit' appointment.id %}" class="btn btn-sm btn-warning">
+                            <i class="fas fa-edit"></i> Modifier
+                        </a>
+                        <a href="{% url 'appointment_detail' appointment.id %}" class="btn btn-sm btn-info">
+                            <i class="fas fa-info-circle"></i> Détails
+                        </a>
+                        <a href="{% url 'appointment_delete' appointment.id %}" class="btn btn-sm btn-danger">
+                            <i class="fas fa-trash-alt"></i> Supprimer
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5">No appointments available.</td>
+                </tr>
+    
+                {% endfor %}
+            </tbody>
+        </table>
+        
+    <script>
+        $(document).ready(function() {
+            $('.search-bar-toggle').on('click', function() {
+                $('.search-input').toggleClass('show-search');
+            });
+            $('.search-input').on('input', function() {
+                var searchTerm = $(this).val().toLowerCase();
+                $('table tbody tr').each(function() {
+                    var rowText = $(this).text().toLowerCase();
+                    if (rowText.indexOf(searchTerm) !== -1) {
+                        $(this).show();
+                    } else {
+                        $(this).hide();
+                    }
+                });
+            });
+        });
+        function toggleDateInput() {
+            var dateContainer = document.getElementById('filter-date-container');
+            var arrow = document.getElementById('filter-arrow');
+    
+            if (dateContainer.style.display === 'none' || dateContainer.style.display === '') {
+                dateContainer.style.display = 'block';
+                arrow.classList.remove('fa-chevron-down');
+                arrow.classList.add('fa-chevron-up');
+            } else {
+                dateContainer.style.display = 'none';
+                arrow.classList.remove('fa-chevron-up');
+                arrow.classList.add('fa-chevron-down');
+            }
+        }
+        document.getElementById('filter-date').addEventListener('change', function () {
+            var filterDate = new Date(this.value); 
+            var formattedFilterDate = formatDate(filterDate);
+            var rows = document.querySelectorAll('#lead-table-body tr');
+            rows.forEach(function (row) {
+                var rowDate = new Date(row.getAttribute('data-date'));
+                var formattedRowDate = formatDate(rowDate);
+                if (formattedFilterDate === formattedRowDate) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none'; 
+                }
+            });
+        });
+        function formatDate(date) {
+            const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
+            return new Intl.DateTimeFormat('fr-FR', options).format(new Date(date));
+        }
+    </script>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

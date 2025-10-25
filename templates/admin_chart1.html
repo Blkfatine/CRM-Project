@@ -1,0 +1,46 @@
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const labels = {{ labels|safe }};
+        const conversionRates = {{ conversion_rates|safe }};
+
+        const ctx = document.getElementById('chart1').getContext('2d');
+        const chart1 = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Taux de Conversion (%)',
+                    data: conversionRates,
+                    backgroundColor: '#26619C', 
+                    borderColor: '#26619C',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: ''
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Utilisateurs'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top'
+                    }
+                }
+            }
+        });
+    });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

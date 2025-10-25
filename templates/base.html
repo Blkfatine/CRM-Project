@@ -1,0 +1,17 @@
+<div class="important-announcements">
+    <div class="header">
+        <h4>Annonces Importantes</h4>
+    </div>
+    {% for annonce in annonces %}
+    <div class="card">
+        <div class="image">
+        </div>
+        <p>
+            {{ annonce.titre }} - {{ annonce.date_pub|date:"d M Y" }}<br>
+            {{ annonce.contenu|truncatewords:10 }}
+            <span class="read-more" onclick="toggleReadMore('announcement{{ annonce.id }}')">Lire plus</span>
+            <span id="announcement{{ annonce.id }}" class="more-text">{{ annonce.contenu }}</span>
+        </p>
+    </div>
+    {% endfor %}
+</div>

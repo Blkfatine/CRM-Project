@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <title>Interactions pour {{ lead.Prénom }} {{ lead.Nom }}</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-image: url('https://images.unsplash.com/photo-1546453667-8a8d2d07bc20?q=80&w=1374&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
+            background-size: cover; 
+            background-position: center; 
+            background-repeat: no-repeat; 
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.8); 
+            border-radius: 15px;
+            padding: 30px;
+            width: 90%;
+            max-width: 700px;
+            margin: 0 auto;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+            -webkit-backdrop-filter: blur(10px); 
+        }
+        
+
+        h1 {
+            font-size: 2em;
+            margin-bottom: 15px;
+            color: #333;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .interaction {
+            border-bottom: 1px solid #ccc;
+            padding: 10px 0;
+        }
+
+        .interaction:last-child {
+            border-bottom: none;
+        }
+
+        .interaction h2 {
+            font-size: 1.2em;
+            margin: 0;
+            color: #555;
+        }
+
+        .interaction p {
+            margin: 5px 0;
+            color: #777;
+        }
+
+        .interaction time {
+            font-size: 0.9em;
+            color: #999;
+        }
+
+        .gmail-link, .btn-primary {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 10px 20px;
+            background-color: #ea4335;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        .form-container {
+            margin-top: 20px;
+            display: none; 
+        }
+
+        .form-container.active {
+            display: block; 
+        }
+
+        .form-container form {
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+
+        .btn:hover {
+            background-color: #0056b3;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+
+        .form-container {
+            max-width: 500px;
+            margin: auto;
+        }
+        
+        .form-container h3 {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .form-container .btn {
+            font-size: 1rem;
+            padding: 10px 20px;
+            transition: background-color 0.3s ease;
+        }
+        
+        .form-container .btn:hover {
+            background-color: #0056b3;
+        }
+        .d-flex {
+            display: flex;
+            align-items: center; 
+        }
+
+.form-control {
+    max-width: 350px; 
+    height: 35px; 
+    padding: 10px; 
+    border-radius: 9px;
+    border: 1px solid #ccc;
+    font-size: 0.9rem;
+    box-sizing: border-box; 
+}
+
+
+
+    </style>
+    <script>
+        function toggleForm(formId) {
+            const formContainer = document.getElementById(formId);
+            formContainer.classList.toggle('active');
+        }
+
+        function toggleDetails(detailsId) {
+            const detailsContainer = document.getElementById(detailsId);
+            detailsContainer.classList.toggle('active');
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>
+            <span class="bx bx-chevron-left-circle" style="cursor: pointer;" onclick="window.location.href='{% url 'lead_detail' lead.id %}'"></span>
+            Interactions pour {{ lead.Prénom }} {{ lead.Nom }}
+        </h1>
+        <h2>Appels téléphoniques</h2>
+        <div class="section">
+            <div class="button-group">
+                <button class="btn" onclick="toggleForm('appel-form-container')">Ajouter une Interaction - Appel</button>
+            </div>
+            <div id="appel-form-container" class="form-container p-4 border rounded shadow-sm bg-white mx-auto" style="max-width: 600px;">
+                
+                <form method="post" action="{% url 'lead_interactions' lead.id %}">
+                    {% csrf_token %}
+                    <ul class="list-unstyled">
+                        <li class="mb-3 d-flex align-items-center">
+                            <label for="date" class="form-label me-3" style="width: 150px;font-weight: bold;">Date:</label>
+                            <input type="date" name="date" id="date" class="form-control" style="flex: 1; max-width: 35%;" required>
+                        </li>
+                        
+                        <li class="mb-3 d-flex align-items-center">
+                            <label for="duree" class="form-label me-3" style="width: 150px;font-weight: bold;">Durée de l'appel:</label>
+                            <div class="d-flex gap-2 w-100">
+                                <input type="number" name="hours" id="hours" class="form-control" style="width: 98px;" placeholder="Heures" min="0">
+                                <input type="number" name="minutes" id="minutes" class="form-control"style="width: 98px;" placeholder="Minutes" min="0" max="59">
+                            </div>
+                        </li>
+                        <li class="mb-3 d-flex align-items-center">
+                            <label for="details" class="form-label me-3" style="width: 150px; color: #000;font-weight: bold;">Détails:</label>
+                            <input type="text" name="details" id="details" class="form-control" required>
+                        </li>
+                        <li class="mb-3 d-flex align-items-center">
+                            <label for="commentaires" class="form-label me-3" style="width: 150px;font-weight: bold;">Commentaires:</label>
+                            <input type="text" name="commentaires" id="commentaires" class="form-control">
+                        </li>
+                    </ul>
+                    <button type="submit" class="btn btn-primary w-100">Enregistrer</button>
+                </form>
+            </div>
+            
+<style>
+            .details-container {
+                display: none; 
+            }
+            
+            .details-container.active {
+                display: block;
+            }
+        </style>
+            <div class="historique-appels">
+                <p >
+                    <a class="cs" title="North East Arrow" data-clipboard-text="↗" style ="color:#3498db; margin-left : 70%;" href= "{% url 'historique_appels'  lead.id %} " >Historique des appels ↗</a>
+                </p>
+            </div>
+                   
+            <div class="section">
+                <h2>Interactions par Email</h2>
+                
+            
+                <button class="gmail-link" style="cursor: pointer;" onclick="redirectToEmailForm('{{ lead.Email }}', '{{ lead.Prénom }}', '{{ lead.id }}')">
+                    Envoyer un Email via Gmail
+                </button>
+                
+                
+                
+                
+                <a href="{% url 'historique_emails' lead.id %}" class="cs" title="North East Arrow" data-clipboard-text="↗" style="color:#3498db; margin-left: 70%;">
+                    Historique des emails ↗
+                </a>
+                
+            </div>
+            <script>
+                function redirectToEmailForm(email, prenom, leadId) {
+                    localStorage.setItem('recipientEmail', email);
+                    localStorage.setItem('recipientPrenom', prenom);
+                    
+                    window.location.href = `/leads/BoiteGmail/${leadId}`;          }
+                
+            </script>
+    <script>
+        function toggleForm(formId) {
+            const formContainer = document.getElementById(formId);
+            formContainer.classList.toggle('active');
+        }
+    
+        function toggleDetails(detailsId) {
+            const detailsContainer = document.getElementById(detailsId);
+            detailsContainer.classList.toggle('active');
+        }
+    </script>
+    
+</body>
+</html>

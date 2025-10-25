@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modifier un Rendez-vous</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&display=swap">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <style>
+        @font-face {
+            font-family: 'Montserrat';
+            font-style: normal;
+            font-weight: 400;
+            font-display: swap;
+            src: url('https://fonts.gstatic.com/s/montserrat/v26/JTUSjIg1_i6t8kCHKm459WRhyzbi.woff2') format('woff2');
+        }
+        @font-face {
+            font-family: 'Montserrat';
+            font-style: normal;
+            font-weight: 700;
+            font-display: swap;
+            src: url('https://fonts.gstatic.com/s/montserrat/v26/JTUSjIg1_i6t8kCHKm459W1hyzbi.woff2') format('woff2');
+        }
+
+        body, html {
+            height: 100%;
+            margin: 0;
+            font-family: 'Montserrat', sans-serif;
+            background: url('https://images.unsplash.com/photo-1529119651565-dc15bd8c75fd?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D') no-repeat center center fixed;
+            background-size: cover;
+        }
+        
+        .wrapper {
+            display: center;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .booking-cta {
+            margin-top: 120px;
+            text-align: center;
+        }
+
+        .booking-cta h1 {
+            font-weight: 600;
+            color: #fff;
+            font-size: 2.5rem;
+            
+        }
+
+       
+
+        .form-wrapper {
+            display: flex;  
+            justify-content: center; 
+            align-items: center; 
+            height: calc(100vh - 100px); 
+        }
+
+        form {
+            background: rgba(0, 0, 0, 0.4);  
+            backdrop-filter: blur(10px); 
+            border-radius: 0px;
+            padding: 90px;
+            box-shadow: 0 10px 10px rgba(0, 0, 0, 0.2);
+            max-width: 600px;
+            width: 100%;
+            margin-top: 10px; 
+            margin-bottom: 0px;
+        }
+        
+        input[type="datetime-local"], 
+        input[type="text"], 
+        select, 
+        button {
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #000;
+            font-weight: bold;
+        }
+
+        .form-control {
+            font-size: 17px;
+            padding: 10px;
+            border-radius: 9px;
+        }
+
+        .form-btn {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .form-btn .submit-btn {
+            background-color: #07061a;
+            color: #fff;
+            border: none;
+            padding: 12px 30px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-top: -23px;
+        }
+
+        .form-btn .submit-btn:hover {
+            background-color: #267bd1;
+        }
+
+        .back-to-list {
+            text-align: center;  
+            margin-top: 10px;
+        }
+        
+        .back-to-list p {
+            margin: 0;  
+        }
+        
+        .back-to-list a {
+            color: #000; 
+            text-decoration: none; 
+            font-weight: 300; 
+            font-size: 16px; 
+        }
+        
+        .back-to-list a:hover {
+            text-decoration: underline; 
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="form-wrapper">
+        <form method="post" action="{% url 'book_appointment' %}">
+            {% csrf_token %}
+            <div class="booking-cta">
+                {% if form.instance.pk %}
+                <h1>Modifier un Rendez-vous</h1>
+                {% else %}
+                <h1>Prendre un Rendez-vous</h1>
+                {% endif %}
+            </div>
+            
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {% for error in form.non_field_errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            <div class="form-group">
+                <span class="form-label">Sélectionner un Lead</span>
+                <select class="form-control" name="lead" required>
+                    {% for lead in form.fields.lead.queryset %}
+                        <option value="{{ lead.id }}" {% if lead.id == form.instance.lead.id %}selected{% endif %}>{{ lead }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <span class="form-label">Sélectionner la Date et l'Heure</span>
+                <input class="form-control" type="datetime-local" id="date" name="date" value="{{ form.instance.date|date:'Y-m-d\TH:i' }}" required>
+            </div>
+            <div class="form-group">
+                <span class="form-label">Lieu</span>
+                {{ form.location }}
+            </div>
+            <div class="form-group">
+                <span class="form-label">Notes Supplémentaires (Optionnel)</span>
+                <input class="form-control" type="text" id="notes" name="notes" value="{{ form.instance.notes }}">
+            </div>
+            <div class="form-group">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="confirm" name="confirmed" {% if form.instance.confirmed %}checked{% endif %}>
+                    <label class="form-check-label" for="confirm">
+                        Confirmé
+                    </label>
+                </div>
+            </div>
+            
+            <div class="form-btn">
+                {% if form.instance.pk %}
+                <button class="submit-btn" type="submit">Modifier Rendez-vous</button>
+                {% else %}
+                <button class="submit-btn" type="submit">Prendre Rendez-vous</button>
+                {% endif %}
+            </div>
+            <div class="back-to-list">
+                <p><a href="{% url 'appointments_list' %}">Retour à la liste des rendez-vous</a></p>
+            </div>
+        </form>
+    </div>
+</body>
+</html>
